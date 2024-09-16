@@ -1,14 +1,13 @@
-import { Timestamp } from "bson";
 import mongoose from "mongoose";
 
-const userSchema = new Schema(
+const userSchema = new mongoose.Schema(
   {
     username: {
       type: String,
       unique: true,
       required: true,
     },
-    eamil: {
+    email: {
       type: String,
       required: true,
       unique: true,
