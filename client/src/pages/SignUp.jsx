@@ -3,6 +3,8 @@ import { useState } from "react";
 
 export default function SignUp() {
   const [data, setData] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const handleChange = (e) => {
     setData({ ...data, [e.target.id]: e.target.value });
@@ -10,8 +12,10 @@ export default function SignUp() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(false);
 
     try {
+      setLoading(true);
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -19,7 +23,13 @@ export default function SignUp() {
       });
       const value = await res.json();
       console.log(value);
+      setLoading(false);
+      if (value.success === false) {
+        setError(true);
+        return;
+      }
     } catch (error) {
+      setLoading(true);
       console.log(error);
     }
   };
@@ -52,8 +62,11 @@ export default function SignUp() {
           className="bg-gray-200 rounded-md p-3"
           onChange={handleChange}
         />
-        <button className="bg-slate-500 p-3 rounded-md text-white uppercase font-semibold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed">
-          Sign Up
+        <button
+          disabled={loading}
+          className="bg-slate-500 p-3 rounded-md text-white uppercase font-semibold hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? "Loading..." : "Sign Up"}
         </button>
       </form>
       <div className="max-w-lg m-auto mt-2 flex gap-2">
@@ -61,6 +74,9 @@ export default function SignUp() {
         <Link to="/sign-in">
           <p className="text-blue-600 font-medium">Sign-in</p>
         </Link>
+      </div>
+      <div className="max-w-lg m-auto mt-2 font-medium text-red-500">
+        <p>{error && "An error occured while signing you up. Try again!."}</p>
       </div>
     </>
   );
